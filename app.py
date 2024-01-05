@@ -6,13 +6,14 @@ app = Flask(__name__)
 
 @app.route('/')
 def add_music_from_db():
-    conn = create_connection('db_music_list.sqlite3')
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM music')
-    musics = cursor.fetchall()
-    context = {
-        'musics': musics
-    }
+    with create_connection('db_music_list.sqlite3') as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM music')
+        musics = cursor.fetchall()
+        context = {
+            'musics': musics
+        }
+
     return render_template(
         'index.html', **context
     )
@@ -20,20 +21,21 @@ def add_music_from_db():
 
 @app.route('/add-music/', methods=['POST'])
 def add_music():
-    print(request.form['input-text'])
-    conn = create_connection('db_music_list.sqlite3')
-    cursor = conn.cursor()
-    cursor.execute(f"INSERT INTO music (text) VALUES ('{request.form['input-text']}')")
-    conn.commit()
+    with create_connection('db_music_list.sqlite3') as conn:
+        cursor = conn.cursor()
+        cursor.execute(f"INSERT INTO music (text) VALUES ('{request.form['input-text']}')")
+        conn.commit()
+
     return redirect('/')
 
 
 @app.route('/delete-music/', methods=['POST'])
 def delete_music():
-    conn = create_connection('db_music_list.sqlite3')
-    cursor = conn.cursor()
-    cursor.execute(f"DELETE FROM music WHERE id = {request.form['id']}")
-    conn.commit()
+    with create_connection('db_music_list.sqlite3') as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM music WHERE id = ?", (request.form['id'],))
+        conn.commit()
+
     return redirect('/')
 
 
