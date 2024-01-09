@@ -7,7 +7,6 @@ app = Flask(__name__)
 db_name = 'db_music_list.sqlite3'
 
 app.config['DB_CONN'] = '/' + db_name
-app.config['DB_CONN'] = True
 
 
 def get_db():
@@ -43,7 +42,6 @@ def add_music():
     cursor = conn.cursor()
     cursor.execute("INSERT INTO music (text) VALUES (?)", (request.form['input-text'],))
     conn.commit()
-    conn.close()
 
     return redirect('/')
 
@@ -54,7 +52,6 @@ def delete_music():
     cursor = conn.cursor()
     cursor.execute("DELETE FROM music WHERE id = ?", (request.form['id'],))
     conn.commit()
-    conn.close()
 
     return redirect('/')
 
